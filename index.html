@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Weather</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=SF+Pro+Display:wght@300;400;500;600&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="app" id="app">
+    <!-- Loading State -->
+    <div class="loading" id="loading">
+      <div class="loading-icon">☀️</div>
+      <p>Loading weather...</p>
+    </div>
+
+    <!-- Main Weather Display -->
+    <div class="weather-container" id="weather-container" style="display: none;">
+      <!-- Location -->
+      <div class="location">
+        <span class="location-icon">📍</span>
+        <span class="location-name" id="location-name">--</span>
+      </div>
+
+      <!-- Current Weather -->
+      <div class="current">
+        <div class="current-icon" id="current-icon">☀️</div>
+        <div class="current-temp" id="current-temp">--°</div>
+        <div class="current-desc" id="current-desc">--</div>
+        <div class="current-range">
+          <span>H: <span id="temp-high">--</span>°</span>
+          <span>L: <span id="temp-low">--</span>°</span>
+        </div>
+      </div>
+
+      <!-- Hourly Forecast -->
+      <div class="card">
+        <div class="card-title">HOURLY FORECAST</div>
+        <div class="hourly" id="hourly">
+          <!-- Filled by JS -->
+        </div>
+      </div>
+
+      <!-- Daily Forecast -->
+      <div class="card">
+        <div class="card-title">7-DAY FORECAST</div>
+        <div class="daily" id="daily">
+          <!-- Filled by JS -->
+        </div>
+      </div>
+
+      <!-- Details Grid -->
+      <div class="details-grid">
+        <div class="detail-card">
+          <div class="detail-icon">💨</div>
+          <div class="detail-value" id="wind">-- km/h</div>
+          <div class="detail-label">Wind</div>
+        </div>
+        <div class="detail-card">
+          <div class="detail-icon">💧</div>
+          <div class="detail-value" id="humidity">--%</div>
+          <div class="detail-label">Humidity</div>
+        </div>
+        <div class="detail-card">
+          <div class="detail-icon">👁️</div>
+          <div class="detail-value" id="visibility">-- km</div>
+          <div class="detail-label">Visibility</div>
+        </div>
+        <div class="detail-card">
+          <div class="detail-icon">🌡️</div>
+          <div class="detail-value" id="feels-like">--°</div>
+          <div class="detail-label">Feels Like</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

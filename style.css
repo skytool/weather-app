@@ -1,0 +1,269 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+:root {
+  --bg-gradient-day: linear-gradient(180deg, #4A90D9 0%, #87CEEB 50%, #B8D4E8 100%);
+  --bg-gradient-night: linear-gradient(180deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+  --card-bg: rgba(255, 255, 255, 0.15);
+  --card-border: rgba(255, 255, 255, 0.2);
+  --text-primary: #ffffff;
+  --text-secondary: rgba(255, 255, 255, 0.7);
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, sans-serif;
+  background: var(--bg-gradient-day);
+  min-height: 100vh;
+  color: var(--text-primary);
+  -webkit-font-smoothing: antialiased;
+}
+
+body.night {
+  background: var(--bg-gradient-night);
+}
+
+.app {
+  max-width: 420px;
+  margin: 0 auto;
+  padding: 20px;
+  padding-top: 60px;
+  padding-bottom: 40px;
+}
+
+/* Loading */
+.loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 60vh;
+  gap: 20px;
+}
+
+.loading-icon {
+  font-size: 64px;
+  animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.1); opacity: 0.8; }
+}
+
+.loading p {
+  color: var(--text-secondary);
+  font-size: 16px;
+}
+
+/* Location */
+.location {
+  text-align: center;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.location-icon {
+  font-size: 14px;
+}
+
+.location-name {
+  font-size: 20px;
+  font-weight: 500;
+}
+
+/* Current Weather */
+.current {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.current-icon {
+  font-size: 120px;
+  line-height: 1.2;
+  filter: drop-shadow(0 10px 30px rgba(0, 0, 0, 0.2));
+}
+
+.current-temp {
+  font-size: 96px;
+  font-weight: 300;
+  letter-spacing: -5px;
+  margin: -10px 0;
+}
+
+.current-desc {
+  font-size: 18px;
+  color: var(--text-secondary);
+  text-transform: capitalize;
+  margin-bottom: 8px;
+}
+
+.current-range {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+  font-size: 18px;
+}
+
+.current-range span {
+  color: var(--text-secondary);
+}
+
+/* Cards */
+.card {
+  background: var(--card-bg);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-radius: 16px;
+  border: 1px solid var(--card-border);
+  padding: 16px;
+  margin-bottom: 16px;
+}
+
+.card-title {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  letter-spacing: 0.5px;
+  margin-bottom: 12px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--card-border);
+}
+
+/* Hourly */
+.hourly {
+  display: flex;
+  gap: 20px;
+  overflow-x: auto;
+  padding-bottom: 8px;
+  scrollbar-width: none;
+}
+
+.hourly::-webkit-scrollbar {
+  display: none;
+}
+
+.hour-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  min-width: 50px;
+}
+
+.hour-time {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-secondary);
+}
+
+.hour-icon {
+  font-size: 28px;
+}
+
+.hour-temp {
+  font-size: 18px;
+  font-weight: 500;
+}
+
+/* Daily */
+.daily {
+  display: flex;
+  flex-direction: column;
+}
+
+.day-item {
+  display: flex;
+  align-items: center;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--card-border);
+}
+
+.day-item:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.day-item:first-child {
+  padding-top: 0;
+}
+
+.day-name {
+  flex: 1;
+  font-size: 18px;
+  font-weight: 500;
+}
+
+.day-icon {
+  font-size: 28px;
+  width: 50px;
+  text-align: center;
+}
+
+.day-temps {
+  display: flex;
+  gap: 12px;
+  width: 90px;
+  justify-content: flex-end;
+}
+
+.day-high {
+  font-size: 18px;
+  font-weight: 500;
+}
+
+.day-low {
+  font-size: 18px;
+  color: var(--text-secondary);
+}
+
+/* Details Grid */
+.details-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.detail-card {
+  background: var(--card-bg);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-radius: 16px;
+  border: 1px solid var(--card-border);
+  padding: 16px;
+  text-align: center;
+}
+
+.detail-icon {
+  font-size: 28px;
+  margin-bottom: 8px;
+}
+
+.detail-value {
+  font-size: 24px;
+  font-weight: 500;
+  margin-bottom: 4px;
+}
+
+.detail-label {
+  font-size: 12px;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Responsive */
+@media (max-width: 380px) {
+  .current-temp {
+    font-size: 72px;
+  }
+  
+  .current-icon {
+    font-size: 80px;
+  }
+}
