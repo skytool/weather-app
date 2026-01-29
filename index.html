@@ -5,11 +5,17 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Weather</title>
   <link rel="stylesheet" href="style.css">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=SF+Pro+Display:wght@300;400;500;600&display=swap" rel="stylesheet">
 </head>
 <body>
   <div class="app" id="app">
+    <!-- Search Bar -->
+    <div class="search-container" id="search-container">
+      <div class="search-box">
+        <span class="search-icon">🔍</span>
+        <input type="text" id="search-input" placeholder="Search city..." autocomplete="off">
+      </div>
+    </div>
+
     <!-- Loading State -->
     <div class="loading" id="loading">
       <div class="loading-icon">☀️</div>

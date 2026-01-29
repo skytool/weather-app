@@ -55,7 +55,6 @@ const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 // Get weather icon
 function getIcon(code, isNight = false) {
   const icon = weatherIcons[code] || '☀️';
-  // Replace sun with moon at night
   if (isNight && icon === '☀️') return '🌙';
   return icon;
 }
@@ -73,6 +72,15 @@ function formatHour(time) {
   return hour >= 12 ? `${hour === 12 ? 12 : hour - 12}PM` : `${hour === 0 ? 12 : hour}AM`;
 }
 
+// Get day name from date string (YYYY-MM-DD)
+function getDayName(dateStr, index) {
+  if (index === 0) return 'Today';
+  // Parse the date string properly
+  const [year, month, day] = dateStr.split('-').map(Number);
+  const date = new Date(year, month - 1, day);
+  return days[date.getDay()];
+}
+
 // Update UI with weather data
 function updateUI(data) {
   const current = data.current_condition[0];
@@ -83,11 +91,14 @@ function updateUI(data) {
   // Toggle night mode
   if (night) {
     document.body.classList.add('night');
+  } else {
+    document.body.classList.remove('night');
   }
 
   // Location
   const cityName = location.areaName[0].value;
-  document.getElementById('location-name').textContent = cityName;
+  const country = location.country[0].value;
+  document.getElementById('location-name').textContent = `${cityName}, ${country}`;
 
   // Current weather
   document.getElementById('current-icon').textContent = getIcon(current.weatherCode, night);
@@ -102,7 +113,7 @@ function updateUI(data) {
   document.getElementById('visibility').textContent = `${current.visibility} km`;
   document.getElementById('feels-like').textContent = `${current.FeelsLikeC}°`;
 
-  // Hourly forecast (today + tomorrow)
+  // Hourly forecast
   const hourlyContainer = document.getElementById('hourly');
   const allHours = [];
   
@@ -129,11 +140,10 @@ function updateUI(data) {
     </div>
   `).join('');
 
-  // Daily forecast
+  // Daily forecast - using the date from API
   const dailyContainer = document.getElementById('daily');
   dailyContainer.innerHTML = forecast.map((day, i) => {
-    const date = new Date(day.date);
-    const dayName = i === 0 ? 'Today' : days[date.getDay()];
+    const dayName = getDayName(day.date, i);
     return `
       <div class="day-item">
         <div class="day-name">${dayName}</div>
@@ -151,8 +161,15 @@ function updateUI(data) {
   document.getElementById('weather-container').style.display = 'block';
 }
 
-// Fetch weather data using wttr.in (no API key needed!)
+// Show loading
+function showLoading() {
+  document.getElementById('loading').style.display = 'flex';
+  document.getElementById('weather-container').style.display = 'none';
+}
+
+// Fetch weather data
 async function fetchWeather(location = '') {
+  showLoading();
   try {
     const url = location 
       ? `https://wttr.in/${encodeURIComponent(location)}?format=j1`
@@ -172,22 +189,34 @@ async function fetchWeather(location = '') {
   }
 }
 
+// Search functionality
+const searchInput = document.getElementById('search-input');
+
+searchInput.addEventListener('keypress', (e) => {
+  if (e.key === 'Enter') {
+    const city = searchInput.value.trim();
+    if (city) {
+      fetchWeather(city);
+      searchInput.blur();
+    }
+  }
+});
+
 // Get user location
 function getLocation() {
   if ('geolocation' in navigator) {
     navigator.geolocation.getCurrentPosition(
       position => {
-        // Use coordinates with wttr.in
         fetchWeather(`${position.coords.latitude},${position.coords.longitude}`);
       },
       error => {
         console.log('Location denied, using IP-based location');
-        fetchWeather(); // wttr.in will use IP geolocation
+        fetchWeather();
       },
       { timeout: 5000 }
     );
   } else {
-    fetchWeather(); // Use IP geolocation
+    fetchWeather();
   }
 }
 
