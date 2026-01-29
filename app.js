@@ -172,10 +172,12 @@ function updateUI(data) {
   document.getElementById('temp-high').textContent = `${highC}°/${highF}°`;
   document.getElementById('temp-low').textContent = `${lowC}°/${lowF}°`;
 
-  // Details
-  document.getElementById('wind').textContent = `${current.windspeedKmph} km/h`;
+  // Details - dual units
+  document.getElementById('wind').innerHTML = `${current.windspeedKmph}<small>km/h</small><br>${current.windspeedMiles}<small>mph</small>`;
   document.getElementById('humidity').textContent = `${current.humidity}%`;
-  document.getElementById('visibility').textContent = `${current.visibility} km`;
+  const visKm = current.visibility;
+  const visMi = (visKm * 0.621371).toFixed(1);
+  document.getElementById('visibility').innerHTML = `${visKm}<small>km</small> / ${visMi}<small>mi</small>`;
   document.getElementById('feels-like').innerHTML = `${current.FeelsLikeC}°<small>C</small> / ${current.FeelsLikeF}°<small>F</small>`;
 
   // Hourly forecast
