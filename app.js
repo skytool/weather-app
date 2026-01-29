@@ -1,4 +1,7 @@
-// Animated Weather Icons (Lottie URLs from lottiefiles.com)
+// OpenWeatherMap API Key
+const OWM_API_KEY = '5fedff8a3f0d39c64ae27cea9b4eae4b';
+
+// Animated Weather Icons (Lottie URLs)
 const animatedIcons = {
   'sunny': 'https://assets9.lottiefiles.com/temp/lf20_Stdaec.json',
   'clear-night': 'https://assets9.lottiefiles.com/temp/lf20_y6mY3F.json',
@@ -10,56 +13,17 @@ const animatedIcons = {
   'mist': 'https://assets9.lottiefiles.com/temp/lf20_kOfPKE.json',
 };
 
-// Weather code to animation mapping
-const codeToAnim = {
-  '113': 'sunny',
-  '116': 'partly-cloudy',
-  '119': 'cloudy',
-  '122': 'cloudy',
-  '143': 'mist',
-  '176': 'rain',
-  '179': 'snow',
-  '182': 'rain',
-  '185': 'rain',
-  '200': 'thunder',
-  '227': 'snow',
-  '230': 'snow',
-  '248': 'mist',
-  '260': 'mist',
-  '263': 'rain',
-  '266': 'rain',
-  '281': 'rain',
-  '284': 'rain',
-  '293': 'rain',
-  '296': 'rain',
-  '299': 'rain',
-  '302': 'rain',
-  '305': 'rain',
-  '308': 'rain',
-  '311': 'rain',
-  '314': 'rain',
-  '317': 'snow',
-  '320': 'snow',
-  '323': 'snow',
-  '326': 'snow',
-  '329': 'snow',
-  '332': 'snow',
-  '335': 'snow',
-  '338': 'snow',
-  '350': 'rain',
-  '353': 'rain',
-  '356': 'rain',
-  '359': 'rain',
-  '362': 'snow',
-  '365': 'snow',
-  '368': 'snow',
-  '371': 'snow',
-  '374': 'rain',
-  '377': 'rain',
-  '386': 'thunder',
-  '389': 'thunder',
-  '392': 'thunder',
-  '395': 'thunder',
+// OpenWeatherMap icon code to animation mapping
+const owmIconToAnim = {
+  '01d': 'sunny', '01n': 'clear-night',
+  '02d': 'partly-cloudy', '02n': 'partly-cloudy',
+  '03d': 'cloudy', '03n': 'cloudy',
+  '04d': 'cloudy', '04n': 'cloudy',
+  '09d': 'rain', '09n': 'rain',
+  '10d': 'rain', '10n': 'rain',
+  '11d': 'thunder', '11n': 'thunder',
+  '13d': 'snow', '13n': 'snow',
+  '50d': 'mist', '50n': 'mist',
 };
 
 // Emoji fallback
@@ -81,27 +45,19 @@ function cToF(c) {
   return Math.round((c * 9/5) + 32);
 }
 
-// Get animation type
-function getAnimType(code, isNight = false) {
-  let anim = codeToAnim[code] || 'sunny';
-  if (isNight && anim === 'sunny') anim = 'clear-night';
-  return anim;
+// Get animation type from OWM icon
+function getAnimType(iconCode) {
+  return owmIconToAnim[iconCode] || 'sunny';
 }
 
 // Get animated icon HTML
-function getAnimatedIcon(code, size = 120, isNight = false) {
-  const animType = getAnimType(code, isNight);
+function getAnimatedIcon(iconCode, size = 120) {
+  const animType = getAnimType(iconCode);
   const url = animatedIcons[animType];
   if (url) {
     return `<lottie-player src="${url}" background="transparent" speed="1" style="width: ${size}px; height: ${size}px;" loop autoplay></lottie-player>`;
   }
   return `<span style="font-size: ${size * 0.8}px">${weatherEmoji[animType]}</span>`;
-}
-
-// Get emoji icon (for smaller displays)
-function getEmoji(code, isNight = false) {
-  const animType = getAnimType(code, isNight);
-  return weatherEmoji[animType] || '☀️';
 }
 
 // Check if night
@@ -111,25 +67,22 @@ function isNight() {
 }
 
 // Format hour
-function formatHour(time) {
-  const hour = parseInt(time) / 100;
+function formatHour(timestamp) {
+  const date = new Date(timestamp * 1000);
+  const hour = date.getHours();
   if (hour === new Date().getHours()) return 'Now';
   return hour >= 12 ? `${hour === 12 ? 12 : hour - 12}PM` : `${hour === 0 ? 12 : hour}AM`;
 }
 
-// Get day name from date string (YYYY-MM-DD)
-function getDayName(dateStr, index) {
+// Get day name
+function getDayName(timestamp, index) {
   if (index === 0) return 'Today';
-  const [year, month, day] = dateStr.split('-').map(Number);
-  const date = new Date(year, month - 1, day);
+  const date = new Date(timestamp * 1000);
   return days[date.getDay()];
 }
 
-// Update UI with weather data
-function updateUI(data) {
-  const current = data.current_condition[0];
-  const location = data.nearest_area[0];
-  const forecast = data.weather;
+// Update UI with OpenWeatherMap data
+function updateUI(current, forecast, location) {
   const night = isNight();
 
   // Toggle night mode
@@ -139,99 +92,84 @@ function updateUI(data) {
     document.body.classList.remove('night');
   }
 
-  // Location with state/region
-  const cityName = location.areaName[0].value;
-  const region = location.region[0].value;
-  const country = location.country[0].value;
-  
-  // Fetch alerts for US locations
-  const lat = location.latitude;
-  const lon = location.longitude;
-  if (country === 'United States of America' || country === 'USA') {
-    fetchAlerts(lat, lon);
-  } else {
-    document.getElementById('alerts-container').style.display = 'none';
-  }
-  
-  // Show: City, State (for US) or City, Region, Country
-  let locationText = cityName;
-  if (region && region !== cityName) {
-    locationText += `, ${region}`;
-  }
-  if (country !== 'United States of America' && country !== 'USA') {
-    locationText += `, ${country}`;
-  }
-  document.getElementById('location-name').textContent = locationText;
+  // Location
+  document.getElementById('location-name').textContent = location;
 
   // Current weather with animated icon
-  document.getElementById('current-icon').innerHTML = getAnimatedIcon(current.weatherCode, 140, night);
+  document.getElementById('current-icon').innerHTML = getAnimatedIcon(current.weather[0].icon, 140);
   
   // Temperature in C and F
-  const tempC = current.temp_C;
-  const tempF = current.temp_F;
+  const tempC = Math.round(current.main.temp);
+  const tempF = cToF(current.main.temp);
   document.getElementById('current-temp').innerHTML = `${tempC}°<span class="temp-unit">C</span> <span class="temp-divider">/</span> ${tempF}°<span class="temp-unit">F</span>`;
   
-  document.getElementById('current-desc').textContent = current.weatherDesc[0].value;
+  document.getElementById('current-desc').textContent = current.weather[0].description;
   
-  // High/Low in both units
-  const highC = forecast[0].maxtempC;
-  const lowC = forecast[0].mintempC;
-  const highF = forecast[0].maxtempF;
-  const lowF = forecast[0].mintempF;
-  document.getElementById('temp-high').textContent = `${highC}°/${highF}°`;
-  document.getElementById('temp-low').textContent = `${lowC}°/${lowF}°`;
+  // Get today's high/low from forecast
+  const todayData = forecast.list.filter(item => {
+    const itemDate = new Date(item.dt * 1000).toDateString();
+    return itemDate === new Date().toDateString();
+  });
+  const todayTemps = todayData.map(d => d.main.temp);
+  const highC = Math.round(Math.max(...todayTemps, current.main.temp));
+  const lowC = Math.round(Math.min(...todayTemps, current.main.temp));
+  
+  document.getElementById('temp-high').textContent = `${highC}°/${cToF(highC)}°`;
+  document.getElementById('temp-low').textContent = `${lowC}°/${cToF(lowC)}°`;
 
   // Details - dual units
-  document.getElementById('wind').innerHTML = `${current.windspeedKmph}<small>km/h</small><br>${current.windspeedMiles}<small>mph</small>`;
-  document.getElementById('humidity').textContent = `${current.humidity}%`;
-  const visKm = current.visibility;
-  const visMi = (visKm * 0.621371).toFixed(1);
+  const windKmh = Math.round(current.wind.speed * 3.6);
+  const windMph = Math.round(current.wind.speed * 2.237);
+  document.getElementById('wind').innerHTML = `${windKmh}<small>km/h</small><br>${windMph}<small>mph</small>`;
+  document.getElementById('humidity').textContent = `${current.main.humidity}%`;
+  const visKm = (current.visibility / 1000).toFixed(1);
+  const visMi = (current.visibility / 1609.34).toFixed(1);
   document.getElementById('visibility').innerHTML = `${visKm}<small>km</small> / ${visMi}<small>mi</small>`;
-  document.getElementById('feels-like').innerHTML = `${current.FeelsLikeC}°<small>C</small> / ${current.FeelsLikeF}°<small>F</small>`;
+  const feelsC = Math.round(current.main.feels_like);
+  const feelsF = cToF(current.main.feels_like);
+  document.getElementById('feels-like').innerHTML = `${feelsC}°<small>C</small> / ${feelsF}°<small>F</small>`;
 
-  // Hourly forecast
+  // Hourly forecast (next 12 hours from 3-hour intervals)
   const hourlyContainer = document.getElementById('hourly');
-  const allHours = [];
-  
-  forecast.slice(0, 2).forEach((day, dayIndex) => {
-    day.hourly.forEach(hour => {
-      const hourNum = parseInt(hour.time) / 100;
-      const isPast = dayIndex === 0 && hourNum < new Date().getHours();
-      if (!isPast) {
-        allHours.push({
-          time: hour.time,
-          tempC: hour.tempC,
-          tempF: hour.tempF,
-          icon: hour.weatherCode,
-          isNight: hourNum < 6 || hourNum > 18
-        });
-      }
-    });
-  });
-
-  hourlyContainer.innerHTML = allHours.slice(0, 12).map((hour, i) => `
+  hourlyContainer.innerHTML = forecast.list.slice(0, 8).map((hour, i) => `
     <div class="hour-item">
-      <div class="hour-time">${i === 0 ? 'Now' : formatHour(hour.time)}</div>
-      <div class="hour-icon">${getAnimatedIcon(hour.icon, 40, hour.isNight)}</div>
-      <div class="hour-temp">${hour.tempC}°<small>/${hour.tempF}°</small></div>
+      <div class="hour-time">${i === 0 ? 'Now' : formatHour(hour.dt)}</div>
+      <div class="hour-icon">${getAnimatedIcon(hour.weather[0].icon, 40)}</div>
+      <div class="hour-temp">${Math.round(hour.main.temp)}°<small>/${cToF(hour.main.temp)}°</small></div>
     </div>
   `).join('');
 
-  // Daily forecast
+  // 7-Day forecast (group by day)
+  const dailyData = {};
+  forecast.list.forEach(item => {
+    const date = new Date(item.dt * 1000).toDateString();
+    if (!dailyData[date]) {
+      dailyData[date] = { temps: [], icons: [], dt: item.dt };
+    }
+    dailyData[date].temps.push(item.main.temp);
+    dailyData[date].icons.push(item.weather[0].icon);
+  });
+
   const dailyContainer = document.getElementById('daily');
-  dailyContainer.innerHTML = forecast.map((day, i) => {
-    const dayName = getDayName(day.date, i);
+  dailyContainer.innerHTML = Object.entries(dailyData).slice(0, 7).map(([date, data], i) => {
+    const high = Math.round(Math.max(...data.temps));
+    const low = Math.round(Math.min(...data.temps));
+    // Get midday icon (or first available)
+    const icon = data.icons[Math.floor(data.icons.length / 2)] || data.icons[0];
     return `
       <div class="day-item">
-        <div class="day-name">${dayName}</div>
-        <div class="day-icon">${getAnimatedIcon(day.hourly[4].weatherCode, 40)}</div>
+        <div class="day-name">${getDayName(data.dt, i)}</div>
+        <div class="day-icon">${getAnimatedIcon(icon, 40)}</div>
         <div class="day-temps">
-          <span class="day-high">${day.maxtempC}°<small>/${day.maxtempF}°</small></span>
-          <span class="day-low">${day.mintempC}°<small>/${day.mintempF}°</small></span>
+          <span class="day-high">${high}°<small>/${cToF(high)}°</small></span>
+          <span class="day-low">${low}°<small>/${cToF(low)}°</small></span>
         </div>
       </div>
     `;
   }).join('');
+
+  // Fetch alerts
+  fetchAlerts(current.coord.lat, current.coord.lon);
 
   // Show weather, hide loading
   document.getElementById('loading').style.display = 'none';
@@ -244,25 +182,105 @@ function showLoading() {
   document.getElementById('weather-container').style.display = 'none';
 }
 
-// Fetch weather data
-async function fetchWeather(location = '') {
+// Fetch weather data from OpenWeatherMap
+async function fetchWeather(query) {
   showLoading();
   try {
-    const url = location 
-      ? `https://wttr.in/${encodeURIComponent(location)}?format=j1`
-      : 'https://wttr.in/?format=j1';
+    let lat, lon, locationName;
     
-    const response = await fetch(url);
-    const data = await response.json();
+    // If query is coordinates
+    if (query && query.includes(',')) {
+      [lat, lon] = query.split(',').map(Number);
+    } else {
+      // Geocode city name
+      const geoUrl = `https://api.openweathermap.org/geo/1.0/direct?q=${encodeURIComponent(query || 'Dallas')}&limit=1&appid=${OWM_API_KEY}`;
+      const geoRes = await fetch(geoUrl);
+      const geoData = await geoRes.json();
+      
+      if (!geoData.length) throw new Error('City not found');
+      
+      lat = geoData[0].lat;
+      lon = geoData[0].lon;
+      locationName = geoData[0].state 
+        ? `${geoData[0].name}, ${geoData[0].state}`
+        : `${geoData[0].name}, ${geoData[0].country}`;
+    }
     
-    updateUI(data);
+    // Fetch current weather and forecast
+    const [currentRes, forecastRes] = await Promise.all([
+      fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&units=metric&appid=${OWM_API_KEY}`),
+      fetch(`https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&units=metric&appid=${OWM_API_KEY}`)
+    ]);
+    
+    const current = await currentRes.json();
+    const forecast = await forecastRes.json();
+    
+    if (current.cod !== 200) throw new Error(current.message);
+    
+    // Build location name if from coordinates
+    if (!locationName) {
+      locationName = current.sys.country === 'US' 
+        ? `${current.name}` 
+        : `${current.name}, ${current.sys.country}`;
+    }
+    
+    updateUI(current, forecast, locationName);
   } catch (error) {
     console.error('Error fetching weather:', error);
     document.getElementById('loading').innerHTML = `
       <div class="loading-icon">⚠️</div>
       <p>Unable to load weather</p>
-      <p style="font-size: 14px; margin-top: 10px;">Check your connection</p>
+      <p style="font-size: 14px; margin-top: 10px;">${error.message}</p>
     `;
+  }
+}
+
+// Fetch weather alerts (US only - weather.gov)
+async function fetchAlerts(lat, lon) {
+  try {
+    const response = await fetch(`https://api.weather.gov/alerts/active?point=${lat},${lon}`);
+    const data = await response.json();
+    
+    const alertsContainer = document.getElementById('alerts-container');
+    const alertsDiv = document.getElementById('alerts');
+    
+    if (data.features && data.features.length > 0) {
+      const alerts = data.features.slice(0, 3);
+      
+      alertsDiv.innerHTML = alerts.map(alert => {
+        const props = alert.properties;
+        const severity = props.severity?.toLowerCase() || 'moderate';
+        const icon = severity === 'extreme' ? '🚨' : severity === 'severe' ? '⚠️' : '⚡';
+        
+        return `
+          <div class="alert-item">
+            <div class="alert-icon">${icon}</div>
+            <div class="alert-content">
+              <div class="alert-title">${props.event}</div>
+              <div class="alert-desc">${props.headline || ''}</div>
+            </div>
+          </div>
+        `;
+      }).join('');
+      
+      const maxSeverity = alerts[0].properties.severity?.toLowerCase();
+      alertsDiv.className = `alert-card alert-severity-${maxSeverity}`;
+    } else {
+      alertsDiv.innerHTML = `
+        <div class="alert-item calm">
+          <div class="alert-icon">😌</div>
+          <div class="alert-content">
+            <div class="alert-title">All Clear</div>
+            <div class="alert-desc">No active weather alerts. Enjoy your day!</div>
+          </div>
+        </div>
+      `;
+      alertsDiv.className = 'alert-card alert-calm';
+    }
+    alertsContainer.style.display = 'block';
+  } catch (error) {
+    console.log('Alerts not available:', error);
+    document.getElementById('alerts-container').style.display = 'none';
   }
 }
 
@@ -304,60 +322,6 @@ function getLocation() {
     fetchWeather('Dallas');
   }
 }
-
-// Fetch weather alerts (US only - weather.gov)
-async function fetchAlerts(lat, lon) {
-  try {
-    const response = await fetch(`https://api.weather.gov/alerts/active?point=${lat},${lon}`);
-    const data = await response.json();
-    
-    const alertsContainer = document.getElementById('alerts-container');
-    const alertsDiv = document.getElementById('alerts');
-    
-    if (data.features && data.features.length > 0) {
-      const alerts = data.features.slice(0, 3); // Show max 3 alerts
-      
-      alertsDiv.innerHTML = alerts.map(alert => {
-        const props = alert.properties;
-        const severity = props.severity?.toLowerCase() || 'moderate';
-        const icon = severity === 'extreme' ? '🚨' : severity === 'severe' ? '⚠️' : '⚡';
-        
-        return `
-          <div class="alert-item">
-            <div class="alert-icon">${icon}</div>
-            <div class="alert-content">
-              <div class="alert-title">${props.event}</div>
-              <div class="alert-desc">${props.headline || ''}</div>
-            </div>
-          </div>
-        `;
-      }).join('');
-      
-      // Set severity class
-      const maxSeverity = alerts[0].properties.severity?.toLowerCase();
-      alertsDiv.className = `alert-card alert-severity-${maxSeverity}`;
-    } else {
-      // Calm mode - no alerts
-      alertsDiv.innerHTML = `
-        <div class="alert-item calm">
-          <div class="alert-icon">😌</div>
-          <div class="alert-content">
-            <div class="alert-title">All Clear</div>
-            <div class="alert-desc">No active weather alerts. Enjoy your day!</div>
-          </div>
-        </div>
-      `;
-      alertsDiv.className = 'alert-card alert-calm';
-    }
-    alertsContainer.style.display = 'block';
-  } catch (error) {
-    console.log('Alerts not available:', error);
-    document.getElementById('alerts-container').style.display = 'none';
-  }
-}
-
-// Store coordinates for alerts
-let currentCoords = null;
 
 // Initialize
 getLocation();
