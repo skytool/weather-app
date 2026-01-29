@@ -139,10 +139,20 @@ function updateUI(data) {
     document.body.classList.remove('night');
   }
 
-  // Location
+  // Location with state/region
   const cityName = location.areaName[0].value;
+  const region = location.region[0].value;
   const country = location.country[0].value;
-  document.getElementById('location-name').textContent = `${cityName}, ${country}`;
+  
+  // Show: City, State (for US) or City, Region, Country
+  let locationText = cityName;
+  if (region && region !== cityName) {
+    locationText += `, ${region}`;
+  }
+  if (country !== 'United States of America' && country !== 'USA') {
+    locationText += `, ${country}`;
+  }
+  document.getElementById('location-name').textContent = locationText;
 
   // Current weather with animated icon
   document.getElementById('current-icon').innerHTML = getAnimatedIcon(current.weatherCode, 140, night);
