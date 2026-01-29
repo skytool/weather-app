@@ -336,11 +336,20 @@ async function fetchAlerts(lat, lon) {
       // Set severity class
       const maxSeverity = alerts[0].properties.severity?.toLowerCase();
       alertsDiv.className = `alert-card alert-severity-${maxSeverity}`;
-      
-      alertsContainer.style.display = 'block';
     } else {
-      alertsContainer.style.display = 'none';
+      // Calm mode - no alerts
+      alertsDiv.innerHTML = `
+        <div class="alert-item calm">
+          <div class="alert-icon">😌</div>
+          <div class="alert-content">
+            <div class="alert-title">All Clear</div>
+            <div class="alert-desc">No active weather alerts. Enjoy your day!</div>
+          </div>
+        </div>
+      `;
+      alertsDiv.className = 'alert-card alert-calm';
     }
+    alertsContainer.style.display = 'block';
   } catch (error) {
     console.log('Alerts not available:', error);
     document.getElementById('alerts-container').style.display = 'none';

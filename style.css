@@ -238,6 +238,15 @@ small {
   border-color: rgba(255, 200, 0, 0.4);
 }
 
+.alert-calm {
+  background: rgba(52, 199, 89, 0.2);
+  border-color: rgba(52, 199, 89, 0.4);
+}
+
+.alert-calm .alert-title {
+  color: #34c759;
+}
+
 /* Cards */
 .card {
   background: var(--card-bg);
