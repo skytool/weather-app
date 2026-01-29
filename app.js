@@ -144,6 +144,15 @@ function updateUI(data) {
   const region = location.region[0].value;
   const country = location.country[0].value;
   
+  // Fetch alerts for US locations
+  const lat = location.latitude;
+  const lon = location.longitude;
+  if (country === 'United States of America' || country === 'USA') {
+    fetchAlerts(lat, lon);
+  } else {
+    document.getElementById('alerts-container').style.display = 'none';
+  }
+  
   // Show: City, State (for US) or City, Region, Country
   let locationText = cityName;
   if (region && region !== cityName) {
@@ -295,6 +304,51 @@ function getLocation() {
     fetchWeather('Dallas');
   }
 }
+
+// Fetch weather alerts (US only - weather.gov)
+async function fetchAlerts(lat, lon) {
+  try {
+    const response = await fetch(`https://api.weather.gov/alerts/active?point=${lat},${lon}`);
+    const data = await response.json();
+    
+    const alertsContainer = document.getElementById('alerts-container');
+    const alertsDiv = document.getElementById('alerts');
+    
+    if (data.features && data.features.length > 0) {
+      const alerts = data.features.slice(0, 3); // Show max 3 alerts
+      
+      alertsDiv.innerHTML = alerts.map(alert => {
+        const props = alert.properties;
+        const severity = props.severity?.toLowerCase() || 'moderate';
+        const icon = severity === 'extreme' ? '🚨' : severity === 'severe' ? '⚠️' : '⚡';
+        
+        return `
+          <div class="alert-item">
+            <div class="alert-icon">${icon}</div>
+            <div class="alert-content">
+              <div class="alert-title">${props.event}</div>
+              <div class="alert-desc">${props.headline || ''}</div>
+            </div>
+          </div>
+        `;
+      }).join('');
+      
+      // Set severity class
+      const maxSeverity = alerts[0].properties.severity?.toLowerCase();
+      alertsDiv.className = `alert-card alert-severity-${maxSeverity}`;
+      
+      alertsContainer.style.display = 'block';
+    } else {
+      alertsContainer.style.display = 'none';
+    }
+  } catch (error) {
+    console.log('Alerts not available:', error);
+    document.getElementById('alerts-container').style.display = 'none';
+  }
+}
+
+// Store coordinates for alerts
+let currentCoords = null;
 
 // Initialize
 getLocation();
