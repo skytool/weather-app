@@ -196,27 +196,39 @@ searchInput.addEventListener('keypress', (e) => {
   if (e.key === 'Enter') {
     const city = searchInput.value.trim();
     if (city) {
+      // Save to localStorage
+      localStorage.setItem('weatherCity', city);
       fetchWeather(city);
       searchInput.blur();
     }
   }
 });
 
-// Get user location
+// Get saved city or use geolocation
 function getLocation() {
+  // Check for saved city first
+  const savedCity = localStorage.getItem('weatherCity');
+  if (savedCity) {
+    searchInput.value = savedCity;
+    fetchWeather(savedCity);
+    return;
+  }
+
+  // Try geolocation
   if ('geolocation' in navigator) {
     navigator.geolocation.getCurrentPosition(
       position => {
         fetchWeather(`${position.coords.latitude},${position.coords.longitude}`);
       },
       error => {
-        console.log('Location denied, using IP-based location');
-        fetchWeather();
+        console.log('Location denied, using default');
+        // Default to Dallas (Aldoss's area)
+        fetchWeather('Dallas');
       },
       { timeout: 5000 }
     );
   } else {
-    fetchWeather();
+    fetchWeather('Dallas');
   }
 }
 
