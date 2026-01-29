@@ -120,16 +120,38 @@ body.night {
 }
 
 .current-icon {
-  font-size: 120px;
-  line-height: 1.2;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 140px;
   filter: drop-shadow(0 10px 30px rgba(0, 0, 0, 0.2));
 }
 
+.current-icon lottie-player {
+  margin: 0 auto;
+}
+
+/* Small temperature text */
+small {
+  font-size: 0.65em;
+  opacity: 0.7;
+}
+
 .current-temp {
-  font-size: 96px;
+  font-size: 48px;
   font-weight: 300;
-  letter-spacing: -5px;
-  margin: -10px 0;
+  letter-spacing: -2px;
+  margin: 10px 0;
+}
+
+.current-temp .temp-unit {
+  font-size: 24px;
+  opacity: 0.7;
+}
+
+.current-temp .temp-divider {
+  opacity: 0.4;
+  margin: 0 5px;
 }
 
 .current-desc {
@@ -200,6 +222,24 @@ body.night {
 
 .hour-icon {
   font-size: 28px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 40px;
+}
+
+.hour-icon lottie-player {
+  margin: 0 auto;
+}
+
+.day-icon {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.day-icon lottie-player {
+  margin: 0 auto;
 }
 
 .hour-temp {

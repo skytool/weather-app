@@ -1,62 +1,107 @@
-// Weather Icons Map (based on weather codes)
-const weatherIcons = {
-  '113': '☀️',  // Sunny
-  '116': '⛅',  // Partly cloudy
-  '119': '☁️',  // Cloudy
-  '122': '☁️',  // Overcast
-  '143': '🌫️',  // Mist
-  '176': '🌦️',  // Patchy rain
-  '179': '🌨️',  // Patchy snow
-  '182': '🌧️',  // Patchy sleet
-  '185': '🌧️',  // Patchy freezing drizzle
-  '200': '⛈️',  // Thundery outbreaks
-  '227': '❄️',  // Blowing snow
-  '230': '❄️',  // Blizzard
-  '248': '🌫️',  // Fog
-  '260': '🌫️',  // Freezing fog
-  '263': '🌧️',  // Patchy light drizzle
-  '266': '🌧️',  // Light drizzle
-  '281': '🌧️',  // Freezing drizzle
-  '284': '🌧️',  // Heavy freezing drizzle
-  '293': '🌧️',  // Patchy light rain
-  '296': '🌧️',  // Light rain
-  '299': '🌧️',  // Moderate rain
-  '302': '🌧️',  // Heavy rain
-  '305': '🌧️',  // Heavy rain
-  '308': '🌧️',  // Heavy rain
-  '311': '🌧️',  // Freezing rain
-  '314': '🌧️',  // Heavy freezing rain
-  '317': '🌨️',  // Light sleet
-  '320': '🌨️',  // Moderate sleet
-  '323': '🌨️',  // Patchy light snow
-  '326': '🌨️',  // Light snow
-  '329': '❄️',  // Patchy moderate snow
-  '332': '❄️',  // Moderate snow
-  '335': '❄️',  // Heavy snow
-  '338': '❄️',  // Heavy snow
-  '350': '🌧️',  // Ice pellets
-  '353': '🌧️',  // Light rain shower
-  '356': '🌧️',  // Heavy rain shower
-  '359': '🌧️',  // Torrential rain
-  '362': '🌨️',  // Light sleet showers
-  '365': '🌨️',  // Heavy sleet showers
-  '368': '🌨️',  // Light snow showers
-  '371': '❄️',  // Heavy snow showers
-  '374': '🌧️',  // Light ice pellets
-  '377': '🌧️',  // Heavy ice pellets
-  '386': '⛈️',  // Thundery rain
-  '389': '⛈️',  // Heavy thunder
-  '392': '⛈️',  // Thundery snow
-  '395': '⛈️',  // Heavy thundery snow
+// Animated Weather Icons (Lottie URLs from lottiefiles.com)
+const animatedIcons = {
+  'sunny': 'https://assets9.lottiefiles.com/temp/lf20_Stdaec.json',
+  'clear-night': 'https://assets9.lottiefiles.com/temp/lf20_y6mY3F.json',
+  'partly-cloudy': 'https://assets9.lottiefiles.com/temp/lf20_dgjK9i.json',
+  'cloudy': 'https://assets5.lottiefiles.com/temp/lf20_VAmWRg.json',
+  'rain': 'https://assets5.lottiefiles.com/temp/lf20_rpC1Rd.json',
+  'thunder': 'https://assets5.lottiefiles.com/temp/lf20_XkF78Y.json',
+  'snow': 'https://assets5.lottiefiles.com/temp/lf20_WtPCZs.json',
+  'mist': 'https://assets9.lottiefiles.com/temp/lf20_kOfPKE.json',
+};
+
+// Weather code to animation mapping
+const codeToAnim = {
+  '113': 'sunny',
+  '116': 'partly-cloudy',
+  '119': 'cloudy',
+  '122': 'cloudy',
+  '143': 'mist',
+  '176': 'rain',
+  '179': 'snow',
+  '182': 'rain',
+  '185': 'rain',
+  '200': 'thunder',
+  '227': 'snow',
+  '230': 'snow',
+  '248': 'mist',
+  '260': 'mist',
+  '263': 'rain',
+  '266': 'rain',
+  '281': 'rain',
+  '284': 'rain',
+  '293': 'rain',
+  '296': 'rain',
+  '299': 'rain',
+  '302': 'rain',
+  '305': 'rain',
+  '308': 'rain',
+  '311': 'rain',
+  '314': 'rain',
+  '317': 'snow',
+  '320': 'snow',
+  '323': 'snow',
+  '326': 'snow',
+  '329': 'snow',
+  '332': 'snow',
+  '335': 'snow',
+  '338': 'snow',
+  '350': 'rain',
+  '353': 'rain',
+  '356': 'rain',
+  '359': 'rain',
+  '362': 'snow',
+  '365': 'snow',
+  '368': 'snow',
+  '371': 'snow',
+  '374': 'rain',
+  '377': 'rain',
+  '386': 'thunder',
+  '389': 'thunder',
+  '392': 'thunder',
+  '395': 'thunder',
+};
+
+// Emoji fallback
+const weatherEmoji = {
+  'sunny': '☀️',
+  'clear-night': '🌙',
+  'partly-cloudy': '⛅',
+  'cloudy': '☁️',
+  'rain': '🌧️',
+  'thunder': '⛈️',
+  'snow': '❄️',
+  'mist': '🌫️',
 };
 
 const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
-// Get weather icon
-function getIcon(code, isNight = false) {
-  const icon = weatherIcons[code] || '☀️';
-  if (isNight && icon === '☀️') return '🌙';
-  return icon;
+// Convert C to F
+function cToF(c) {
+  return Math.round((c * 9/5) + 32);
+}
+
+// Get animation type
+function getAnimType(code, isNight = false) {
+  let anim = codeToAnim[code] || 'sunny';
+  if (isNight && anim === 'sunny') anim = 'clear-night';
+  return anim;
+}
+
+// Get animated icon HTML
+function getAnimatedIcon(code, size = 120, isNight = false) {
+  const animType = getAnimType(code, isNight);
+  const url = animatedIcons[animType];
+  if (url) {
+    return `<lottie-player src="${url}" background="transparent" speed="1" style="width: ${size}px; height: ${size}px;" loop autoplay></lottie-player>`;
+  }
+  return `<span style="font-size: ${size * 0.8}px">${weatherEmoji[animType]}</span>`;
+}
+
+// Get emoji icon (for smaller displays)
+function getEmoji(code, isNight = false) {
+  const animType = getAnimType(code, isNight);
+  return weatherEmoji[animType] || '☀️';
 }
 
 // Check if night
@@ -75,7 +120,6 @@ function formatHour(time) {
 // Get day name from date string (YYYY-MM-DD)
 function getDayName(dateStr, index) {
   if (index === 0) return 'Today';
-  // Parse the date string properly
   const [year, month, day] = dateStr.split('-').map(Number);
   const date = new Date(year, month - 1, day);
   return days[date.getDay()];
@@ -100,18 +144,29 @@ function updateUI(data) {
   const country = location.country[0].value;
   document.getElementById('location-name').textContent = `${cityName}, ${country}`;
 
-  // Current weather
-  document.getElementById('current-icon').textContent = getIcon(current.weatherCode, night);
-  document.getElementById('current-temp').textContent = `${current.temp_C}°`;
+  // Current weather with animated icon
+  document.getElementById('current-icon').innerHTML = getAnimatedIcon(current.weatherCode, 140, night);
+  
+  // Temperature in C and F
+  const tempC = current.temp_C;
+  const tempF = current.temp_F;
+  document.getElementById('current-temp').innerHTML = `${tempC}°<span class="temp-unit">C</span> <span class="temp-divider">/</span> ${tempF}°<span class="temp-unit">F</span>`;
+  
   document.getElementById('current-desc').textContent = current.weatherDesc[0].value;
-  document.getElementById('temp-high').textContent = forecast[0].maxtempC;
-  document.getElementById('temp-low').textContent = forecast[0].mintempC;
+  
+  // High/Low in both units
+  const highC = forecast[0].maxtempC;
+  const lowC = forecast[0].mintempC;
+  const highF = forecast[0].maxtempF;
+  const lowF = forecast[0].mintempF;
+  document.getElementById('temp-high').textContent = `${highC}°/${highF}°`;
+  document.getElementById('temp-low').textContent = `${lowC}°/${lowF}°`;
 
   // Details
   document.getElementById('wind').textContent = `${current.windspeedKmph} km/h`;
   document.getElementById('humidity').textContent = `${current.humidity}%`;
   document.getElementById('visibility').textContent = `${current.visibility} km`;
-  document.getElementById('feels-like').textContent = `${current.FeelsLikeC}°`;
+  document.getElementById('feels-like').innerHTML = `${current.FeelsLikeC}°<small>C</small> / ${current.FeelsLikeF}°<small>F</small>`;
 
   // Hourly forecast
   const hourlyContainer = document.getElementById('hourly');
@@ -124,7 +179,8 @@ function updateUI(data) {
       if (!isPast) {
         allHours.push({
           time: hour.time,
-          temp: hour.tempC,
+          tempC: hour.tempC,
+          tempF: hour.tempF,
           icon: hour.weatherCode,
           isNight: hourNum < 6 || hourNum > 18
         });
@@ -135,22 +191,22 @@ function updateUI(data) {
   hourlyContainer.innerHTML = allHours.slice(0, 12).map((hour, i) => `
     <div class="hour-item">
       <div class="hour-time">${i === 0 ? 'Now' : formatHour(hour.time)}</div>
-      <div class="hour-icon">${getIcon(hour.icon, hour.isNight)}</div>
-      <div class="hour-temp">${hour.temp}°</div>
+      <div class="hour-icon">${getAnimatedIcon(hour.icon, 40, hour.isNight)}</div>
+      <div class="hour-temp">${hour.tempC}°<small>/${hour.tempF}°</small></div>
     </div>
   `).join('');
 
-  // Daily forecast - using the date from API
+  // Daily forecast
   const dailyContainer = document.getElementById('daily');
   dailyContainer.innerHTML = forecast.map((day, i) => {
     const dayName = getDayName(day.date, i);
     return `
       <div class="day-item">
         <div class="day-name">${dayName}</div>
-        <div class="day-icon">${getIcon(day.hourly[4].weatherCode)}</div>
+        <div class="day-icon">${getAnimatedIcon(day.hourly[4].weatherCode, 40)}</div>
         <div class="day-temps">
-          <span class="day-high">${day.maxtempC}°</span>
-          <span class="day-low">${day.mintempC}°</span>
+          <span class="day-high">${day.maxtempC}°<small>/${day.maxtempF}°</small></span>
+          <span class="day-low">${day.mintempC}°<small>/${day.mintempF}°</small></span>
         </div>
       </div>
     `;
@@ -196,7 +252,6 @@ searchInput.addEventListener('keypress', (e) => {
   if (e.key === 'Enter') {
     const city = searchInput.value.trim();
     if (city) {
-      // Save to localStorage
       localStorage.setItem('weatherCity', city);
       fetchWeather(city);
       searchInput.blur();
@@ -206,7 +261,6 @@ searchInput.addEventListener('keypress', (e) => {
 
 // Get saved city or use geolocation
 function getLocation() {
-  // Check for saved city first
   const savedCity = localStorage.getItem('weatherCity');
   if (savedCity) {
     searchInput.value = savedCity;
@@ -214,7 +268,6 @@ function getLocation() {
     return;
   }
 
-  // Try geolocation
   if ('geolocation' in navigator) {
     navigator.geolocation.getCurrentPosition(
       position => {
@@ -222,7 +275,6 @@ function getLocation() {
       },
       error => {
         console.log('Location denied, using default');
-        // Default to Dallas (Aldoss's area)
         fetchWeather('Dallas');
       },
       { timeout: 5000 }
