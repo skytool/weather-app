@@ -159,7 +159,7 @@ function updateUI(current, forecast, location) {
     return `
       <div class="day-item">
         <div class="day-name">${getDayName(data.dt, i)}</div>
-        <div class="day-icon">${getAnimatedIcon(icon, 40)}</div>
+        <div class="day-icon">${getAnimatedIcon(icon, 32)}</div>
         <div class="day-temps">
           <span class="day-high">${high}°<small>/${cToF(high)}°</small></span>
           <span class="day-low">${low}°<small>/${cToF(low)}°</small></span>
