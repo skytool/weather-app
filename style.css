@@ -6,11 +6,16 @@
 
 :root {
   --bg-gradient-day: linear-gradient(180deg, #4A90D9 0%, #87CEEB 50%, #B8D4E8 100%);
-  --bg-gradient-night: linear-gradient(180deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
-  --card-bg: rgba(255, 255, 255, 0.15);
-  --card-border: rgba(255, 255, 255, 0.2);
+  --bg-gradient-night: linear-gradient(180deg, #2a2a4e 0%, #26335e 50%, #1f4470 100%);
+  --card-bg: rgba(255, 255, 255, 0.18);
+  --card-border: rgba(255, 255, 255, 0.25);
   --text-primary: #ffffff;
-  --text-secondary: rgba(255, 255, 255, 0.7);
+  --text-secondary: rgba(255, 255, 255, 0.85);
+}
+
+body.night {
+  --card-bg: rgba(255, 255, 255, 0.12);
+  --text-secondary: rgba(255, 255, 255, 0.9);
 }
 
 body {
@@ -133,8 +138,8 @@ body.night {
 
 /* Small temperature text */
 small {
-  font-size: 0.65em;
-  opacity: 0.7;
+  font-size: 0.7em;
+  opacity: 0.85;
 }
 
 .current-temp {
